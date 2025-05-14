@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DepartmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,3 +23,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/ping', function () {
     return response()->json(['message' => 'pong']);
 });
+
+// Auth
+Route::post('login', [AuthController::class, 'login']);
+Route::post('register', [AuthController::class, 'register']);
+
+// Departaments
+
+Route::get('getAllDepartments', [DepartmentController::class, 'getAllDepartments']);
