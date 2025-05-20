@@ -25,11 +25,83 @@ class DepartmentController extends Controller
     }
 
     /**
+     * Get paginated departments.
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getPaginatedDepartments(Request $request)
+    {
+        // Obtener parámetros del cuerpo de la solicitud
+        $data = $request->json()->all();
+
+        $perPage = $data['pageSize'];
+        $page = $data['page'];
+        $searchTerm = $data['searchTerm'] ?? '';
+        $statusIds = array_filter($data['statusids'] ?? [], function ($value) {
+            return $value !== '' && is_numeric($value);
+        });
+        $sortBy = 'name';
+        $sortDirection = 'asc';
+        // Iniciar la consulta
+        $query = Department::query();
+
+        // Filtrar por statusids si está presente 
+        if (!empty($statusIds)) {
+            $query->whereIn('is_active', $statusIds);
+        } else {
+            // Si no se especifica, filtrar solo activos 
+            $query->where('is_active', 1);
+        }
+
+        // Aplicar filtro de búsqueda si existe
+        if (!empty($searchTerm)) {
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'like', "%{$searchTerm}%")
+                    ->orWhere('description', 'like', "%{$searchTerm}%");
+            });
+        }
+
+        // Aplicar orden
+        $query->orderBy($sortBy, $sortDirection);
+
+        // Obtener resultados paginados
+        $departments = $query->paginate($perPage, ['*'], 'page', $page);
+
+        return response()->json([
+            'status' => 'ok',
+            'departments' => $departments->items(),
+            'totalCount' => $departments->total(),
+            'page' => $departments->currentPage(),
+            'pageSize' => $departments->perPage()
+        ]);
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function createDepartment(Request $request)
     {
-        //
+        // Validar el request
+        $data = $request->validate([
+            'name' => 'required|unique:departments,name',
+            'description' => '',
+            'is_active' => 'required',
+        ]);
+        // Creamos un nuevo departamento
+        $department = Department::create([
+            'name' => $data['description'],
+            'description' => $data['description'],
+            'is_active' => $data['is_active'],
+
+        ]);
+
+        return response()->json(
+            [
+                'department' => $department,
+                'status' => 'ok'
+            ]
+        );
     }
 
     /**
@@ -51,8 +123,15 @@ class DepartmentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function deleteDepartment(string $id)
     {
-        //
+        // Eliminar departamento
+        $department = Department::find($id);
+        $department->delete();
+        return response()->json(
+            [
+                'status' => 'ok'
+            ]
+        );
     }
 }

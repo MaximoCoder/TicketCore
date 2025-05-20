@@ -56,6 +56,7 @@ class RegisterRequest extends FormRequest
             'phone.string' => 'El telefono no es valido',
             'phone.min' => 'El telefono debe tener al menos 10 caracteres',
             'phone.max' => 'El telefono debe tener maximo 10 caracteres',
+            'phone.unique' => 'El telefono ya esta registrado',
             'department_id.required' => 'El departamento es obligatorio',
         ];
     }
