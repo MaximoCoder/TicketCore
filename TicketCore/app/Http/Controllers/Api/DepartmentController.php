@@ -112,26 +112,64 @@ class DepartmentController extends Controller
         //
     }
 
+    /*
+    * Method to obtain a department by id
+    */
+    public function getDepartmentById(Request $request)
+    {
+        $department = Department::find($request->id);
+        return response()->json(
+            [
+                'department' => $department,
+                'status' => 'ok'
+            ]
+        );
+    }
+
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function updateDepartmentById(Request $request)
     {
-        //
+        // Validar el request
+        $data = $request->validate([
+            'name' => 'required',
+            'description' => '',
+            'is_active' => 'required',
+        ]);
+        // Actualizar departamento
+        $department = Department::find($request->id);
+        $department->update([
+            'name' => $data['name'],
+            'description' => $data['description'],
+            'is_active' => $data['is_active'],
+        ]);
+        return response()->json(
+            [
+                'department' => $department,
+                'status' => 'ok'
+            ]
+        );
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function deleteDepartment(string $id)
+    public function deleteDepartmentById(Request $request)
     {
-        // Eliminar departamento
-        $department = Department::find($id);
-        $department->delete();
-        return response()->json(
-            [
-                'status' => 'ok'
-            ]
-        );
+        $Ids = $request->ids;
+
+        // Verificar si $Ids es un array
+        if (is_array($Ids)) {
+            // Eliminar múltiples departamentos
+            Department::whereIn('id', $Ids)->delete();
+        } else {
+            // Eliminar un solo departamento
+            Department::find($Ids)->delete();
+        }
+
+        return response()->json([
+            'status' => 'ok'
+        ]);
     }
 }

@@ -25,9 +25,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Departments
     Route::post('getPaginatedDepartments', [DepartmentController::class, 'getPaginatedDepartments']);
     Route::post('createDepartment', [DepartmentController::class, 'createDepartment']);
-    Route::post('show', [DepartmentController::class, 'show']);
-    Route::post('update', [DepartmentController::class, 'update']);
-    Route::post('deleteDepartment', [DepartmentController::class, 'deleteDepartment']);
+    Route::post('updateDepartmentById', [DepartmentController::class, 'updateDepartmentById']);
+    Route::post('getDepartmentById', [DepartmentController::class, 'getDepartmentById']);
+    Route::post('deleteDepartmentById', [DepartmentController::class, 'deleteDepartmentById']);
 });
 
 Route::get('/ping', function () {
