@@ -50,8 +50,8 @@ class DepartmentController extends Controller
         if (!empty($statusIds)) {
             $query->whereIn('is_active', $statusIds);
         } else {
-            // Si no se especifica, filtrar solo activos 
-            $query->where('is_active', 1);
+            // Si no se especifica, mostrar todos 
+
         }
 
         // Aplicar filtro de búsqueda si existe
@@ -64,6 +64,8 @@ class DepartmentController extends Controller
 
         // Aplicar orden
         $query->orderBy($sortBy, $sortDirection);
+        // Condicion deleted == 0
+        $query->where('deleted', 0);
 
         // Obtener resultados paginados
         $departments = $query->paginate($perPage, ['*'], 'page', $page);
@@ -90,7 +92,7 @@ class DepartmentController extends Controller
         ]);
         // Creamos un nuevo departamento
         $department = Department::create([
-            'name' => $data['description'],
+            'name' => $data['name'],
             'description' => $data['description'],
             'is_active' => $data['is_active'],
 
@@ -157,16 +159,15 @@ class DepartmentController extends Controller
      */
     public function deleteDepartmentById(Request $request)
     {
-        $Ids = $request->ids;
+        $ids = $request->ids;
 
-        // Verificar si $Ids es un array
-        if (is_array($Ids)) {
-            // Eliminar múltiples departamentos
-            Department::whereIn('id', $Ids)->delete();
-        } else {
-            // Eliminar un solo departamento
-            Department::find($Ids)->delete();
+        // Convertir a array si viene como string separado por comas
+        if (is_string($ids)) {
+            $ids = explode(',', $ids);
+            $ids = array_map('trim', $ids);
         }
+        // En lugar de eliminar pasamos el deleted a 1 para marcarlo como borrado
+        Department::whereIn('id', $ids)->update(['deleted' => 1]);
 
         return response()->json([
             'status' => 'ok'

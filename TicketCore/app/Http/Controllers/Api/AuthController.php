@@ -80,6 +80,21 @@ class AuthController extends Controller
         ];
     }
 
+    public function checkToken(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Token inválido o expirado'], 401);
+        }
+
+        return response()->json([
+            'message' => 'Token válido',
+            'user' => $user,
+            'accessToken' => $user->createToken('auth_token')->plainTextToken
+        ]);
+    }
+
 
     /**
      * Update the specified resource in storage.
