@@ -13,8 +13,11 @@ class DepartmentController extends Controller
      */
     public function getAllDepartments()
     {
-        // Traer todos los departamentos activos
-        $departamentos = Department::where('is_active', 1)->get();
+        // Traer todos los departamentos activos y no eliminados
+        $departamentos = Department::where('is_active', 1)
+            ->where('deleted', 0)
+            ->get();
+
 
         return response()->json(
             [

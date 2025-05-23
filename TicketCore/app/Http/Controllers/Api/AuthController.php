@@ -73,7 +73,8 @@ class AuthController extends Controller
         $user = $request->user();
         // Borrar el token
         $user->currentAccessToken()->delete();
-
+        // Pasamos is_active a 0 para marcarlo como inactivo
+        User::where('id', $user->id)->update(['is_active' => 0]);
         // Devolver la respuesta
         return [
             'user' => null

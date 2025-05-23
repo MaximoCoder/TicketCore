@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DepartmentController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -30,6 +31,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('updateDepartmentById', [DepartmentController::class, 'updateDepartmentById']);
     Route::post('getDepartmentById', [DepartmentController::class, 'getDepartmentById']);
     Route::post('deleteDepartmentById', [DepartmentController::class, 'deleteDepartmentById']);
+
+    // Users
+    Route::get('getAllUsers', [UserController::class, 'getAllUsers']);
+    Route::post('getPaginatedUsers', [UserController::class, 'getPaginatedUsers']);
+    Route::post('createUser', [UserController::class, 'createUser']);
+    Route::post('getUserById', [UserController::class, 'getUserById']);
+    Route::post('updateUserById', [UserController::class, 'updateUserById']);
+    Route::post('deleteUserById', [UserController::class, 'deleteUserById']);
 });
 
 Route::get('/ping', function () {
