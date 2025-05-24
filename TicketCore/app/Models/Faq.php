@@ -10,6 +10,14 @@ class Faq extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'category_id',
+        'question',
+        'summary',
+        'order',
+        'is_published',
+    ];
+
     /**
      * Obtener la categoría asociada a esta FAQ.
      */

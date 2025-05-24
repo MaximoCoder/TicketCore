@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\ScheduleController;
 use App\Http\Controllers\Api\DepartmentController;
+use App\Http\Controllers\Api\FaqController;
+use App\Http\Controllers\Api\TicketCategorieController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +27,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('checkToken', [AuthController::class, 'checkToken']);
     Route::post('logout', [AuthController::class, 'logout']);
+
+    // Categories
+    Route::get('/categories/getAllCategories', [TicketCategorieController::class, 'getAllCategories']);
+    // Route::post('getPaginatedCategories', [UserController::class, 'getPaginatedCategories']);
+    // Route::post('createCategory', [UserController::class, 'createCategory']);
+    // Route::post('getCategoryById', [UserController::class, 'getCategoryById']);
+    // Route::post('updateCategoryById', [UserController::class, 'updateCategoryById']);
+    // Route::post('deleteCategoryById', [UserController::class, 'deleteCategoryById']);
 
     // Departments
     Route::post('getPaginatedDepartments', [DepartmentController::class, 'getPaginatedDepartments']);
@@ -47,6 +57,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/schedules/update', [ScheduleController::class, 'updateSchedule']);
     Route::post('/schedules/delete', [ScheduleController::class, 'deleteDate']);
     Route::post('/schedule/unassign', [ScheduleController::class, 'unassignUserFromDate']);
+
+    // Faqs
+    Route::post('/faqs/getPaginatedFaqs', [FaqController::class, 'getPaginatedFaqs']);
+    Route::post('/faqs/createFaq', [FaqController::class, 'createFaq']);
+    Route::post('/faqs/getFaqById', [FaqController::class, 'getFaqById']);
+    Route::post('/faqs/updateFaqById', [FaqController::class, 'updateFaqById']);
+    Route::post('/faqs/deleteFaqById', [FaqController::class, 'deleteFaqById']);
+    // Faq steps
+
 });
 
 Route::get('/ping', function () {
