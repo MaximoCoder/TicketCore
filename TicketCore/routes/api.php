@@ -1,10 +1,11 @@
 <?php
 
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\DepartmentController;
-use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\ScheduleController;
+use App\Http\Controllers\Api\DepartmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,6 +40,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('getUserById', [UserController::class, 'getUserById']);
     Route::post('updateUserById', [UserController::class, 'updateUserById']);
     Route::post('deleteUserById', [UserController::class, 'deleteUserById']);
+
+    // Schedules
+    Route::post('/schedules/getSchedule', [ScheduleController::class, 'getSchedule']);
+    Route::post('/schedules/getByDate', [ScheduleController::class, 'getByDate']);
+    Route::post('/schedules/update', [ScheduleController::class, 'updateSchedule']);
+    Route::post('/schedules/delete', [ScheduleController::class, 'deleteDate']);
+    Route::post('/schedule/unassign', [ScheduleController::class, 'unassignUserFromDate']);
 });
 
 Route::get('/ping', function () {
