@@ -224,4 +224,56 @@ class ScheduleController extends Controller
             'message' => 'Fecha no encontrada.'
         ], 404);
     }
+
+    // Obtain al schedule of the current week
+    public function getScheduleCurrentWeek()
+    {
+        $json = Storage::get('support_schedule.json');
+        $schedules = json_decode($json, true) ?? [];
+
+        // Obtener fecha actual y calcular inicio y fin de semana
+        $now = now();
+        $startOfWeek = $now->startOfWeek()->format('Y-m-d');
+        $endOfWeek = $now->endOfWeek()->format('Y-m-d');
+
+        // Filtrar los horarios activos de esta semana
+        $currentWeekSchedules = array_filter($schedules, function ($schedule) use ($startOfWeek, $endOfWeek) {
+            $scheduleDate = $schedule['date'];
+            return $scheduleDate >= $startOfWeek &&
+                $scheduleDate <= $endOfWeek &&
+                $schedule['status'] === 'active';
+        });
+
+        // Reindexar el array
+        $currentWeekSchedules = array_values($currentWeekSchedules);
+
+        // Obtener todos los IDs únicos de usuarios
+        $userIds = [];
+        foreach ($currentWeekSchedules as $schedule) {
+            $userIds = array_merge($userIds, $schedule['ids']);
+        }
+        $userIds = array_unique($userIds);
+
+        // Consultar los usuarios
+        $users = User::whereIn('id', $userIds)
+            ->pluck('name', 'id')
+            ->toArray();
+
+        // Agregar los nombres de usuarios a cada horario
+        foreach ($currentWeekSchedules as &$schedule) {
+            $schedule['user_names'] = [];
+            foreach ($schedule['ids'] as $id) {
+                if (isset($users[$id])) {
+                    $schedule['user_names'][] = $users[$id];
+                }
+            }
+        }
+        unset($schedule); // Romper la referencia
+
+        return response()->json([
+            'status' => 'ok',
+            'message' => 'Horarios activos de la semana actual con información de usuarios.',
+            'data' => $currentWeekSchedules
+        ]);
+    }
 }

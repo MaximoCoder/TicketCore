@@ -57,6 +57,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/schedules/update', [ScheduleController::class, 'updateSchedule']);
     Route::post('/schedules/delete', [ScheduleController::class, 'deleteDate']);
     Route::post('/schedule/unassign', [ScheduleController::class, 'unassignUserFromDate']);
+    Route::post('/schedule/getScheduleCurrentWeek', [ScheduleController::class, 'getScheduleCurrentWeek']);
 
     // Faqs
     Route::post('/faqs/getPaginatedFaqs', [FaqController::class, 'getPaginatedFaqs']);
