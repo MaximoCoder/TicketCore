@@ -65,6 +65,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/faqs/getFaqById', [FaqController::class, 'getFaqById']);
     Route::post('/faqs/updateFaqById', [FaqController::class, 'updateFaqById']);
     Route::post('/faqs/deleteFaqById', [FaqController::class, 'deleteFaqById']);
+    Route::post('/faqs/getPublishedFaqsWithSteps', [FaqController::class, 'getPublishedFaqsWithSteps']);
+
     // Faq steps
     Route::post('/faqs/getPaginatedSteps', [FaqController::class, 'getPaginatedSteps']);
     Route::post('/faqs/createStepFaq', [FaqController::class, 'createStepFaq']);

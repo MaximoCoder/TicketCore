@@ -354,4 +354,57 @@ class FaqController extends Controller
             'status' => 'ok'
         ]);
     }
+
+    public function getPublishedFaqsWithSteps(Request $request)
+    {
+        // Obtener filtros opcionales
+        $categoryId = $request->input('category_id');
+        $question = $request->input('searchTerm');
+        $perPage = $request->input('pageSize');
+
+        // Construir la consulta base
+        $query = Faq::with(['category', 'steps'])
+            ->where('is_published', 1);
+
+        // Aplicar filtro por categoría si se proporciona
+        if ($categoryId) {
+            $query->where('category_id', $categoryId);
+        }
+
+        // Aplicar filtro por pregunta si se proporciona
+        if ($question) {
+            $query->where('question', 'like', "%{$question}%");
+        }
+
+        // Paginación
+        $faqs = $query->orderBy('order')->paginate($perPage);
+
+        // Formatear resultados
+        $mappedFaqs = $faqs->getCollection()->map(function ($faq) {
+            return [
+                'id' => $faq->id,
+                'question' => $faq->question,
+                'summary' => $faq->summary,
+                'category_id' => $faq->category_id,
+                'category' => $faq->category->name ?? null,
+                'order' => $faq->order,
+                'is_published' => $faq->is_published,
+                'created_at' => $faq->created_at,
+                'updated_at' => $faq->updated_at,
+                'steps' => $faq->steps, // Pasos asociados (FaqStep)
+            ];
+        });
+
+        // Devolver la respuesta paginada con la estructura adecuada
+        return response()->json([
+            'faqs' => $mappedFaqs,
+            'pagination' => [
+                'current_page' => $faqs->currentPage(),
+                'per_page' => $faqs->perPage(),
+                'total' => $faqs->total(),
+                'last_page' => $faqs->lastPage(),
+            ],
+            'status' => 'ok'
+        ]);
+    }
 }
