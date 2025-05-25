@@ -65,7 +65,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/faqs/updateFaqById', [FaqController::class, 'updateFaqById']);
     Route::post('/faqs/deleteFaqById', [FaqController::class, 'deleteFaqById']);
     // Faq steps
-
+    Route::post('/faqs/getPaginatedSteps', [FaqController::class, 'getPaginatedSteps']);
+    Route::post('/faqs/createStepFaq', [FaqController::class, 'createStepFaq']);
+    Route::post('/faqs/getStepFaqById', [FaqController::class, 'getStepFaqById']);
+    Route::post('/faqs/updateStepFaqById', [FaqController::class, 'updateStepFaqById']);
+    Route::post('/faqs/deleteStepFaqById', [FaqController::class, 'deleteStepFaqById']);
+    Route::post('/faqs/getAllStepFaqByFaqId', [FaqController::class, 'getAllStepFaqByFaqId']);
 });
 
 Route::get('/ping', function () {
