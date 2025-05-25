@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\ScheduleController;
 use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\TicketCategorieController;
+use App\Http\Controllers\Api\TicketController;
+use PHPUnit\Framework\Attributes\Ticket;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,6 +29,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('checkToken', [AuthController::class, 'checkToken']);
     Route::post('logout', [AuthController::class, 'logout']);
+
+    // Tickets
+    Route::post('/tickets/getPaginatedTickets', [TicketController::class, 'getPaginatedTickets']);
+    Route::post('/tickets/store', [TicketController::class, 'store']);
+    Route::post('createTicket', [TicketController::class, 'createTicket']);
+    Route::post('getTicketById', [TicketController::class, 'getTicketById']);
+    Route::post('/tickets/assignTicket', [TicketController::class, 'assignTicket']);
+    Route::post('/tickets/unassignTicket', [TicketController::class, 'unassignTicket']);
 
     // Categories
     Route::get('/categories/getAllCategories', [TicketCategorieController::class, 'getAllCategories']);

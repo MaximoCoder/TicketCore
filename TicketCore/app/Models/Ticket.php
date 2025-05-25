@@ -16,6 +16,7 @@ class Ticket extends Model
         'subject',
         'description',
         'user_id',
+        'anydesk_id',
         'assigned_to',
         'department_id',
         'category_id',

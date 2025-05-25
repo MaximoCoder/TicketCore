@@ -10,6 +10,13 @@ class TicketPriority extends Model
 {
     use HasFactory;
 
+    protected $table = 'ticket_priorities';
+
+    protected $fillable = [
+        'name',
+        'color_code',
+        'response_time',
+    ];
     /**
      * Obtener los tickets con esta prioridad.
      */

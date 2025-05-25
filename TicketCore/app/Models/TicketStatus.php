@@ -10,6 +10,12 @@ class TicketStatus extends Model
 {
     use HasFactory;
 
+    protected $table = 'ticket_statuses';
+
+    protected $fillable = [
+        'name',
+    ];
+
     /**
      * Obtener los tickets con este estado.
      */
