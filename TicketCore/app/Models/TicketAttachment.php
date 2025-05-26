@@ -20,4 +20,9 @@ class TicketAttachment extends Model
         'size',
         'uploaded_by'
     ];
+
+    public function ticket()
+    {
+        return $this->belongsTo(Ticket::class);
+    }
 }

@@ -120,6 +120,64 @@ class TicketController extends Controller
 
     /**
      * 
+     *  Obtener todos los tickets paginados de un user
+     * 
+     */
+    public function getUserTickets(Request $request)
+    {
+        $data = $request->json()->all();
+        $userId = $data['user_id'];
+        $perPage = $data['pageSize'];
+        $page = $data['page'];
+
+        // Iniciar la consulta con relaciones
+        $query = Ticket::with([
+            'status:id,name',
+            'category:id,name',
+            'department:id,name',
+            'priority:id,name',
+            'assignedUser:id,name'
+        ])->where('user_id', $userId);
+
+        // Ordenar por fecha de creación descendente (más nuevo al más viejo)
+        $query->orderBy('created_at', 'desc');
+
+        // Obtener resultados paginados
+        $tickets = $query->paginate($perPage, ['*'], 'page', $page);
+
+        // Mapear los resultados para incluir los nombres de las relaciones
+        $mappedTickets = $tickets->getCollection()->map(function ($ticket) {
+            return [
+                'id' => $ticket->id,
+                'ticket_number' => $ticket->ticket_number,
+                'subject' => $ticket->subject,
+                'status' => $ticket->status->name,
+                'description' => $ticket->description,
+                'is_active' => $ticket->is_active,
+                'created_at' => $ticket->created_at,
+                'updated_at' => $ticket->updated_at,
+                'category_id' => $ticket->category_id,
+                'category_name' => $ticket->category->name ?? null,
+                'department_id' => $ticket->department_id,
+                'department_name' => $ticket->department->name ?? null,
+                'priority_id' => $ticket->priority_id,
+                'priority_name' => $ticket->priority->name ?? null,
+                'assigned_to' => $ticket->assigned_to,
+                'assigned_user_name' => $ticket->assignedUser->name ?? null,
+            ];
+        });
+
+        return response()->json([
+            'status' => 'ok',
+            'tickets' => $mappedTickets,
+            'totalCount' => $tickets->total(),
+            'page' => $tickets->currentPage(),
+            'pageSize' => $tickets->perPage()
+        ]);
+    }
+
+    /**
+     * 
      * Obtener los tickets paginados
      * 
      *  */
@@ -220,6 +278,144 @@ class TicketController extends Controller
             'totalCount' => $tickets->total(),
             'page' => $tickets->currentPage(),
             'pageSize' => $tickets->perPage()
+        ]);
+    }
+
+    /**
+     * Obtener un ticket completo por su ID con toda la información relacionada
+     * 
+     * @param int $id ID del ticket
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getTicketById(Request $request)
+    {
+
+        $data = $request->json()->all();
+        $id = $data['id'];
+
+        // Obtener el ticket con todas las relaciones principales
+        $ticket = Ticket::with([
+            'status:id,name',
+            'category:id,name',
+            'department:id,name',
+            'priority:id,name',
+            'user:id,name,email', // Usuario que creó el ticket
+            'assignedUser:id,name,email', // Usuario asignado
+            'attachments:id,ticket_id,filename,path,mime_type,size,uploaded_by,created_at',
+            'comments.user:id,name,email' // Comentarios con información del usuario
+        ])->findOrFail($id);
+
+        // Formatear la respuesta
+        $response = [
+            'ticket' => [
+                'id' => $ticket->id,
+                'ticket_number' => $ticket->ticket_number,
+                'subject' => $ticket->subject,
+                'description' => $ticket->description,
+                'status' => $ticket->status->name,
+                'status_id' => $ticket->status_id,
+                'is_active' => $ticket->is_active,
+                'created_at' => $ticket->created_at,
+                'updated_at' => $ticket->updated_at,
+                'category' => $ticket->category->name,
+                'category_id' => $ticket->category_id,
+                'department' => $ticket->department->name,
+                'department_id' => $ticket->department_id,
+                'priority' => $ticket->priority->name,
+                'priority_id' => $ticket->priority_id,
+                'anydesk_id' => $ticket->anydesk_id,
+                'user' => $ticket->user->name,
+                'user_id' => $ticket->user_id,
+                'user_email' => $ticket->user->email,
+                'assigned_to' => $ticket->assigned_to,
+                'assigned_user_name' => $ticket->assignedUser->name ?? null,
+                'assigned_user_email' => $ticket->assignedUser->email ?? null,
+            ],
+            'attachments' => $ticket->attachments->map(function ($attachment) {
+                return [
+                    'id' => $attachment->id,
+                    'filename' => $attachment->filename,
+                    'path' => $attachment->path,
+                    'mime_type' => $attachment->mime_type,
+                    'size' => $attachment->size,
+                    'uploaded_by' => $attachment->uploaded_by,
+                    'created_at' => $attachment->created_at
+                ];
+            }),
+            // 'comments' => $ticket->comments->map(function ($comment) {
+            //     return [
+            //         'id' => $comment->id,
+            //         'comment' => $comment->comment,
+            //         'is_private' => $comment->is_private,
+            //         'created_at' => $comment->created_at,
+            //         'updated_at' => $comment->updated_at,
+            //         'user' => [
+            //             'id' => $comment->user->id,
+            //             'name' => $comment->user->name,
+            //             'email' => $comment->user->email
+            //         ]
+            //     ];
+            // })
+        ];
+
+        return response()->json([
+            'status' => 'ok',
+            'data' => $response
+        ]);
+    }
+
+    /**
+     * 
+     * Method for obtain all comments of a ticket by ticket id
+     */
+
+    public function getTicketComments(Request $request)
+    {
+        $data = $request->json()->all();
+        $id = $data['id'];
+
+        $ticket = Ticket::with([
+            'comments.user:id,name,email'
+        ])->findOrFail($id);
+
+        return response()->json([
+            'status' => 'ok',
+            'data' => $ticket->comments->map(function ($comment) {
+                return [
+                    'id' => $comment->id,
+                    'comment' => $comment->comment,
+                    'is_private' => $comment->is_private,
+                    'created_at' => $comment->created_at,
+                    'updated_at' => $comment->updated_at,
+                    'user' => [
+                        'id' => $comment->user->id,
+                        'name' => $comment->user->name,
+                        'email' => $comment->user->email
+                    ]
+                ];
+            })
+        ]);
+    }
+
+    // Crear un comment en un ticket
+    public function storeComment(Request $request)
+    {
+        $data = $request->json()->all();
+        $id = $data['ticket_id'];
+        $comment = $data['comment'];
+        $user_id = $data['user_id'];
+
+        $ticket = Ticket::findOrFail($id);
+        $newComment = $ticket->comments()->create([
+            'ticket_id' => $id,
+            'comment' => $comment,
+            'user_id' => $user_id
+        ]);
+
+        return response()->json([
+            'status' => 'ok',
+            'data' => $newComment,
+            'message' => 'Comment created successfully'
         ]);
     }
 

@@ -49,7 +49,7 @@ class Ticket extends Model
     /**
      * Obtener el usuario creador del ticket.
      */
-    public function creator(): BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }

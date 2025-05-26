@@ -32,11 +32,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Tickets
     Route::post('/tickets/getPaginatedTickets', [TicketController::class, 'getPaginatedTickets']);
+    Route::post('/tickets/getUserTickets', [TicketController::class, 'getUserTickets']);
     Route::post('/tickets/store', [TicketController::class, 'store']);
     Route::post('createTicket', [TicketController::class, 'createTicket']);
-    Route::post('getTicketById', [TicketController::class, 'getTicketById']);
+    Route::post('/tickets/getTicketById', [TicketController::class, 'getTicketById']);
     Route::post('/tickets/assignTicket', [TicketController::class, 'assignTicket']);
     Route::post('/tickets/unassignTicket', [TicketController::class, 'unassignTicket']);
+    Route::post('/tickets/getTicketComments', [TicketController::class, 'getTicketComments']);
+    Route::post('/tickets/storeComment', [TicketController::class, 'storeComment']);
 
     // Categories
     Route::get('/categories/getAllCategories', [TicketCategorieController::class, 'getAllCategories']);
