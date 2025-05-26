@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\ScheduleController;
 use App\Http\Controllers\Api\DepartmentController;
@@ -29,6 +30,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('checkToken', [AuthController::class, 'checkToken']);
     Route::post('logout', [AuthController::class, 'logout']);
+
+    // Dashsboard
+    Route::get('/dashboard/getDashboardData', [DashboardController::class, 'getDashboardData']);
 
     // Tickets
     Route::post('/tickets/getPaginatedTickets', [TicketController::class, 'getPaginatedTickets']);

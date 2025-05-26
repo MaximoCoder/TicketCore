@@ -430,7 +430,7 @@ class TicketController extends Controller
         $assignedTo = $data['user_id'];
         $ticketIds = $data['ticket_ids'];
 
-        Ticket::whereIn('id', $ticketIds)->update(['assigned_to' => $assignedTo]);
+        Ticket::whereIn('id', $ticketIds)->update(['assigned_to' => $assignedTo, 'status_id' => 2]);
 
         return response()->json([
             'status' => 'ok',
@@ -449,7 +449,7 @@ class TicketController extends Controller
 
         $ticketIds = $data['ticket_ids'];
 
-        Ticket::whereIn('id', $ticketIds)->update(['assigned_to' => null]);
+        Ticket::whereIn('id', $ticketIds)->update(['assigned_to' => null, 'status_id' => 1]);
 
         return response()->json([
             'status' => 'ok',
