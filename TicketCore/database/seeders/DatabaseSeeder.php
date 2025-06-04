@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
         // LLamamos a los seeders
 
         // Seeders ya usados
-        //$this->call(departmentSeeder::class);
+        // $this->call(departmentSeeder::class);
         // $this->call(ticketCategorySeeder::class);
         // $this->call(ticketPrioritySeeder::class);
         // $this->call(ticketStatusesSeeder::class);

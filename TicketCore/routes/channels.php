@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Ticket;
 use Illuminate\Support\Facades\Broadcast;
 
 /*
@@ -15,4 +16,13 @@ use Illuminate\Support\Facades\Broadcast;
 
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
+});
+
+Broadcast::channel('ticket.{ticketId}', function ($user, $ticketId) {
+    // Verificar que el usuario tenga acceso al ticket
+    return Ticket::where('id', $ticketId)
+        ->where(function ($query) use ($user) {
+            $query->where('user_id', $user->id)
+                ->orWhere('assigned_to', $user->id);
+        })->exists();
 });

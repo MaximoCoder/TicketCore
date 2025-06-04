@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Ticket;
 use Illuminate\Support\Str;
+use App\Events\CommentAdded;
 use Illuminate\Http\Request;
 use App\Models\TicketAttachment;
 use App\Http\Controllers\Controller;
@@ -412,6 +413,12 @@ class TicketController extends Controller
             'user_id' => $user_id
         ]);
 
+        // Cargar la relación user
+        $newComment->load('user:id,name,email');
+
+        // Disparar el evento
+        broadcast(new CommentAdded($newComment, $data['ticket_id']));
+
         return response()->json([
             'status' => 'ok',
             'data' => $newComment,
@@ -454,6 +461,23 @@ class TicketController extends Controller
         return response()->json([
             'status' => 'ok',
             'message' => 'Tickets unassigned successfully'
+        ]);
+    }
+
+    /** 
+     * Close ticket
+     */
+
+    public function closeTicket(Request $request)
+    {
+        $data = $request->json()->all();
+        $id = $data['id'];
+        $ticket = Ticket::findOrFail($id);
+        $ticket->status_id = 6;
+        $ticket->save();
+        return response()->json([
+            'status' => 'ok',
+            'message' => 'Ticket closed successfully'
         ]);
     }
 }

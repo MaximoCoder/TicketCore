@@ -2,15 +2,16 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\DashboardController;
-use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\Api\ScheduleController;
-use App\Http\Controllers\Api\DepartmentController;
-use App\Http\Controllers\Api\FaqController;
-use App\Http\Controllers\Api\TicketCategorieController;
-use App\Http\Controllers\Api\TicketController;
 use PHPUnit\Framework\Attributes\Ticket;
+use Illuminate\Support\Facades\Broadcast;
+use App\Http\Controllers\Api\FaqController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\TicketController;
+use App\Http\Controllers\Api\ScheduleController;
+use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\DepartmentController;
+use App\Http\Controllers\Api\TicketCategorieController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +29,10 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
+    // Route::post('/broadcasting/auth', function () {
+    //     return response()->json(['message' => 'Authenticated for broadcasting']);
+    // })->name('broadcasting.auth');
+
     Route::post('checkToken', [AuthController::class, 'checkToken']);
     Route::post('logout', [AuthController::class, 'logout']);
 
@@ -42,6 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/tickets/getTicketById', [TicketController::class, 'getTicketById']);
     Route::post('/tickets/assignTicket', [TicketController::class, 'assignTicket']);
     Route::post('/tickets/unassignTicket', [TicketController::class, 'unassignTicket']);
+    Route::post('/tickets/closeTicket', [TicketController::class, 'closeTicket']);
     Route::post('/tickets/getTicketComments', [TicketController::class, 'getTicketComments']);
     Route::post('/tickets/storeComment', [TicketController::class, 'storeComment']);
 
@@ -91,6 +97,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/faqs/updateStepFaqById', [FaqController::class, 'updateStepFaqById']);
     Route::post('/faqs/deleteStepFaqById', [FaqController::class, 'deleteStepFaqById']);
     Route::post('/faqs/getAllStepFaqByFaqId', [FaqController::class, 'getAllStepFaqByFaqId']);
+
+    // WEBSOCKET
+    Route::post('/broadcasting/auth', function (Request $request) {
+        return Broadcast::auth($request);
+    })->middleware(['auth:sanctum']);
 });
 
 Route::get('/ping', function () {
