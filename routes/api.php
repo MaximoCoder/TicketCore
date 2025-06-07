@@ -101,7 +101,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // WEBSOCKET
     Route::post('/broadcasting/auth', function (Request $request) {
         return Broadcast::auth($request);
-    })->middleware(['auth:sanctum']);
+    });
 });
 
 Route::get('/ping', function () {
